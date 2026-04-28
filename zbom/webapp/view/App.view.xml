@@ -1,7 +1,16 @@
-<mvc:View controllerName="zbom.controller.App"
-    displayBlock="true"
+<mvc:View
+    controllerName="zbom.controller.App"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m">
+
     <App id="app">
+        <pages>
+            <Page id="page" title="BOM Creation">
+                <content>
+                    <NavContainer id="navContainer"/>
+                </content>
+            </Page>
+        </pages>
     </App>
+
 </mvc:View>

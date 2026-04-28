@@ -1,0 +1,23 @@
+<mvc:View
+    controllerName="zbom.controller.BOMCreate"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m">
+
+    <Page title="Create BOM">
+
+        <content>
+            <VBox>
+
+                <Input placeholder="Plant" value="{Plant}"/>
+                <Input placeholder="Material" value="{Material}"/>
+                <Input placeholder="BOM Usage" value="{BomUsage}"/>
+                <Input placeholder="Base Qty" value="{BaseQty}"/>
+                <Input placeholder="Base UOM" value="{BaseUom}"/>
+
+                <Button text="Create BOM" press="onCreateBOM"/>
+
+            </VBox>
+        </content>
+
+    </Page>
+</mvc:View>
