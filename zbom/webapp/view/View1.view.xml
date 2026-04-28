@@ -1,0 +1,35 @@
+<mvc:View
+    controllerName="zbom.controller.View1"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc">
+
+    <Page title="BOM List">
+
+        <content>
+
+            <Button text="Create BOM" press="onCreate"/>
+
+            <Table items="{/ZC_BOM_HEADER}">
+                <columns>
+                    <Column><Text text="Plant"/></Column>
+                    <Column><Text text="Material"/></Column>
+                    <Column><Text text="Usage"/></Column>
+                    <Column><Text text="Alt BOM"/></Column>
+                </columns>
+
+                <items>
+                    <ColumnListItem>
+                        <cells>
+                            <Text text="{Plant}"/>
+                            <Text text="{Material}"/>
+                            <Text text="{BomUsage}"/>
+                            <Text text="{AltBom}"/>
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+
+        </content>
+
+    </Page>
+</mvc:View>
