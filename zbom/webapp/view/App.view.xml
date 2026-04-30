@@ -1,16 +1,6 @@
 <mvc:View
     controllerName="zbom.controller.App"
-    xmlns:mvc="sap.ui.core.mvc"
-    xmlns="sap.m">
-
-    <App id="app">
-        <pages>
-            <Page id="page" title="BOM Creation">
-                <content>
-                    <NavContainer id="navContainer"/>
-                </content>
-            </Page>
-        </pages>
-    </App>
-
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc">
+    <App id="app"/>
 </mvc:View>

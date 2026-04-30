@@ -1,35 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>MATERIAL BOM CREATION</title>
-    <style>
-        html, body, body > div, #container, #container-uiarea {
-            height: 100%;
-        }
-    </style>
+    <meta charset="utf-8">
+    <title>BOM App</title>
+
     <script
         id="sap-ui-bootstrap"
-        src="resources/sap-ui-core.js"
+        src="/resources/sap-ui-core.js"
         data-sap-ui-theme="sap_horizon"
-        data-sap-ui-resource-roots='{
-            "zbom": "./"
-        }'
-        data-sap-ui-on-init="module:sap/ui/core/ComponentSupport"
-        data-sap-ui-compat-version="edge"
-        data-sap-ui-async="true"
-        data-sap-ui-frame-options="trusted"
-    ></script>
+        data-sap-ui-resourceroots='{"zbom": "./"}'
+        data-sap-ui-oninit="module:sap/ui/core/ComponentSupport"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true">
+    </script>
 </head>
-<body class="sapUiBody sapUiSizeCompact" id="content">
-    <div
-        data-sap-ui-component
-        data-name="zbom"
-        data-id="container"
-        data-settings='{"id" : "zbom"}'
-        data-handle-validation="true"
-    ></div>
+
+<body class="sapUiBody">
+    <div data-sap-ui-component data-name="zbom"></div>
 </body>
 </html>

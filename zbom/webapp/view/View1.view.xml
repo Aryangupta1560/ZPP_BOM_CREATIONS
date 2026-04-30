@@ -3,35 +3,81 @@
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m">
 
-    <Page title="BOM List">
+<Page title="BOMs">
 
-        <customHeader>
-            <Toolbar>
-                <Title text="BOMs"/>
-                <ToolbarSpacer/>
-                <Button text="Create" press="onCreate"/>
-            </Toolbar>
-        </customHeader>
+    <!-- 🔹 FILTER BAR -->
+    <VBox class="sapUiSmallMargin">
 
-        <content>
-            <Table items="{/ZC_BOM_HEADER}">
-                <columns>
-                    <Column><Text text="Plant"/></Column>
-                    <Column><Text text="Material"/></Column>
-                    <Column><Text text="Usage"/></Column>
-                </columns>
+        <HBox justifyContent="SpaceBetween">
 
-                <items>
-                    <ColumnListItem press="onSelect">
-                        <cells>
-                            <Text text="{Plant}"/>
-                            <Text text="{Material}"/>
-                            <Text text="{BomUsage}"/>
-                        </cells>
-                    </ColumnListItem>
-                </items>
-            </Table>
-        </content>
+            <HBox>
+                <VBox class="sapUiTinyMarginEnd">
+                    <Label text="Plant"/>
+                    <Input id="plantFilter"/>
+                </VBox>
 
-    </Page>
+                <VBox class="sapUiTinyMarginEnd">
+                    <Label text="Material"/>
+                    <Input id="materialFilter"/>
+                </VBox>
+
+                <VBox>
+                    <Label text="BOM Usage"/>
+                    <Input id="usageFilter"/>
+                </VBox>
+            </HBox>
+
+            <Button text="Go" type="Emphasized" press="onSearch"/>
+        </HBox>
+
+    </VBox>
+
+    <!-- 🔹 TOOLBAR -->
+    <Toolbar>
+        <Title text="BOMs"/>
+        <ToolbarSpacer/>
+
+        <Button text="Delete" type="Reject" press="onDelete"/>
+        <Button text="Create" type="Emphasized" press="onCreate"/>
+    </Toolbar>
+
+    <!-- 🔹 TABLE -->
+    <Table
+        id="bomTable"
+        mode="MultiSelect"
+        items="{/ZC_BOM_HEADER}">
+
+        <columns>
+            <Column>
+                <header><Text text="Plant"/></header>
+            </Column>
+            <Column>
+                <header><Text text="Material"/></header>
+            </Column>
+            <Column>
+                <header><Text text="Usage"/></header>
+            </Column>
+            <Column width="50px">
+                <header><Text text=""/></header>
+            </Column>
+        </columns>
+
+        <items>
+            <ColumnListItem type="Navigation" press="onNavigate">
+
+                <cells>
+                    <Text text="{Plant}"/>
+                    <Text text="{Material}"/>
+                    <Text text="{BomUsage}"/>
+
+                    <!-- 🔹 Arrow like RAP -->
+                    <Button icon="sap-icon://navigation-right-arrow" type="Transparent"/>
+                </cells>
+
+            </ColumnListItem>
+        </items>
+
+    </Table>
+
+</Page>
 </mvc:View>

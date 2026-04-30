@@ -1,22 +1,61 @@
 <mvc:View
     controllerName="zbom.controller.BOMItem"
     xmlns:mvc="sap.ui.core.mvc"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core"
     xmlns="sap.m">
-
-    <Page title="Add BOM Items">
-
+    <Page title="New Object - BOM - BOM Item" showNavButton="true" navButtonPress="onNavBack">
         <content>
-            <VBox>
+            <VBox class="sapUiSmallMargin">
+                <Title text="General Information" level="H2" class="sapUiSmallMarginBottom"/>
+                
+                <f:SimpleForm editable="true" layout="ResponsiveGridLayout" columnsL="3" columnsM="2">
+                    <f:content>
+                        <Label text="Item Number"/>
+                        <Text text="-"/>
+                        
+                        <!-- <Label text="Item Category"/>
+                        <Input id="itmCategoryInput"/> -->
 
-                <Input placeholder="Item Category" id="itemCat"/>
-                <Input placeholder="Component" id="component"/>
-                <Input placeholder="Quantity" id="qty"/>
-                <Input placeholder="UOM" id="uom"/>
+                        <Label text="Item Category"/>
+<Select id="itmCategoryInput">
+    <items>
+        <core:Item key="L" text="Stock Item"/>
+        <core:Item key="N" text="Non-Stock"/>
+        <core:Item key="T" text="Text Item"/>
+    </items>
+</Select>
 
-                <Button text="Add Item" press="onAddItem"/>
+                        <Label text="Component"/>
+                        <Input id="itmComponentInput"/>
 
+                        <Label text="Material Description"/>
+                        <Input id="itmMatDescInput"/>
+
+                        <Label text="Quantity"/>
+                        <Input id="itmQtyInput"/>
+
+                        <Label text="Unit of Measure"/>
+                        <Input id="itmUomInput"/>
+
+                        <Label text="Short String"/>
+                        <Input id="itmShortStringInput"/>
+
+                        <Label text="Item Text"/>
+                        <Input id="itmTextInput"/>
+
+                        <Label text="Selected Flag"/>
+                        <Input id="itmFlagInput"/>
+                    </f:content>
+                </f:SimpleForm>
             </VBox>
         </content>
-
+        <footer>
+            <OverflowToolbar>
+                <ToolbarSpacer/>
+                <Button text="Create" type="Emphasized" press="onCreateItem"/>
+                <Button text="Cancel" press="onNavBack"/>
+            </OverflowToolbar>
+        </footer>
     </Page>
 </mvc:View>

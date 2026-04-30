@@ -3,125 +3,54 @@
   "sap.app": {
     "id": "zbom",
     "type": "application",
-    "i18n": "i18n/i18n.properties",
-    "applicationVersion": {
-      "version": "0.0.1"
-    },
-    "title": "{{appTitle}}",
-    "description": "{{appDescription}}",
-    "resources": "resources.json",
-    "sourceTemplate": {
-      "id": "@sap/generator-fiori:basic",
-      "version": "1.22.0",
-      "toolsId": "dcce87bd-81d0-4b28-afdb-64502a1ddb01"
-    },
     "dataSources": {
       "mainService": {
         "uri": "/sap/opu/odata/sap/ZSB_BOM_CREATION/",
         "type": "OData",
         "settings": {
-          "annotations": [],
-          "localUri": "localService/mainService/metadata.xml",
           "odataVersion": "2.0"
         }
       }
-    },
-    "crossNavigation": {
-      "inbounds": {
-        "ZC_BOM_HEADER-DISPLAY": {
-          "semanticObject": "ZC_BOM_HEADER",
-          "action": "DISPLAY",
-          "title": "{{ZC_BOM_HEADER-DISPLAY.flpTitle}}",
-          "signature": {
-            "parameters": {},
-            "additionalParameters": "allowed"
-          }
-        }
-      }
-    }
-  },
-  "sap.ui": {
-    "technology": "UI5",
-    "icons": {
-      "icon": "",
-      "favIcon": "",
-      "phone": "",
-      "phone@2": "",
-      "tablet": "",
-      "tablet@2": ""
-    },
-    "deviceTypes": {
-      "desktop": true,
-      "tablet": true,
-      "phone": true
     }
   },
   "sap.ui5": {
-    "flexEnabled": false,
-    "dependencies": {
-      "minUI5Version": "1.142.10",
-      "libs": {
-        "sap.m": {},
-        "sap.ui.core": {}
-      }
-    },
-    "contentDensities": {
-      "compact": true,
-      "cozy": true
+    "rootView": {
+      "viewName": "zbom.view.App",
+      "type": "XML",
+      "id": "app",
+      "async": true
     },
     "models": {
-      "i18n": {
-        "type": "sap.ui.model.resource.ResourceModel",
-        "settings": {
-          "bundleName": "zbom.i18n.i18n"
-        }
-      },
       "": {
+        "type": "sap.ui.model.odata.v2.ODataModel",
         "dataSource": "mainService",
-        "preload": true,
-        "settings": {}
-      }
-    },
-    "resources": {
-      "css": [
-        {
-          "uri": "css/style.css"
+        "settings": {
+          "defaultBindingMode": "TwoWay",
+          "useBatch": true
         }
-      ]
+      }
     },
     "routing": {
       "config": {
         "routerClass": "sap.m.routing.Router",
-        "controlAggregation": "pages",
         "controlId": "app",
-        "transition": "slide",
-        "type": "View",
+        "controlAggregation": "pages",
         "viewType": "XML",
-        "path": "zbom.view",
-        "async": true,
-        "viewPath": "zbom.view"
+        "viewPath": "zbom.view",
+        "async": true
       },
       "routes": [
-        {
-          "name": "RouteView1",
-          "pattern": ":?query:",
-          "target": [
-            "TargetView1"
-          ]
-        }
+        { "name": "RouteView1", "pattern": "", "target": "TargetView1" },
+        { "name": "RouteCreate", "pattern": "create", "target": "TargetCreate" },
+        { "name": "RouteDetail", "pattern": "detail/{BomId}", "target": "TargetDetail" },
+        { "name": "RouteItem", "pattern": "item/{BomId}", "target": "TargetItem" }
       ],
       "targets": {
-        "TargetView1": {
-          "id": "View1",
-          "name": "View1"
-        }
+        "TargetView1": { "viewName": "View1", "viewLevel": 1 },
+        "TargetCreate": { "viewName": "BOMCreate", "viewLevel": 2 },
+        "TargetDetail": { "viewName": "BOMDetail", "viewLevel": 2 },
+        "TargetItem": { "viewName": "BOMItem", "viewLevel": 3 }
       }
-    },
-    "rootView": {
-      "viewName": "zbom.view.App",
-      "type": "XML",
-      "id": "App",
-      "async": true
     }
   }
 }
