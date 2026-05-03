@@ -1,83 +1,84 @@
 <mvc:View
     controllerName="zbom.controller.View1"
     xmlns:mvc="sap.ui.core.mvc"
-    xmlns="sap.m">
+    xmlns="sap.m"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core"
+    displayBlock="true">
 
-<Page title="BOMs">
+    <Page id="pageBOMCreation3" title="Material BOM Creation" showNavButton="false" backgroundDesign="Standard">
+        <customHeader>
+            <Bar>
+                <contentLeft>
+                    <Title text="Material BOM Creation" level="H2" class="sapUiSmallMarginBegin"/>
+                </contentLeft>
+                <contentRight>
+                    <Button icon="sap-icon://action" type="Emphasized" press=".onExecute"/>
+                    <Button icon="sap-icon://copy" class="sapUiSmallMarginEnd"/>
+                </contentRight>
+            </Bar>
+        </customHeader>
 
-    <!-- 🔹 FILTER BAR -->
-    <VBox class="sapUiSmallMargin">
+        <content>
+            <!-- Padding gives the form some breathing room from the screen edges -->
+            <VBox class="sapUiResponsiveContentPadding">
+                
+                <f:SimpleForm
+                    id="inputForm3"
+                    title="Input Screen"
+                    editable="true"
+                    layout="ResponsiveGridLayout"
+                    labelSpanXL="3" labelSpanL="3" labelSpanM="4" labelSpanS="12"
+                    adjustLabelSpan="false"
+                    emptySpanXL="6" emptySpanL="5" emptySpanM="2" emptySpanS="0"
+                    columnsXL="1" columnsL="1" columnsM="1"
+                    singleContainerFullSize="false">
+                    <f:content>
+                        <Label text="Material" required="true"/>
+                        <Input id="inpMaterial3" showValueHelp="true" valueHelpRequest=".onMaterialValueHelp"/>
 
-        <HBox justifyContent="SpaceBetween">
+                        <Label text="BOM Usage" required="true"/>
+                        <Input id="inpBomUsage3" />
 
-            <HBox>
-                <VBox class="sapUiTinyMarginEnd">
-                    <Label text="Plant"/>
-                    <Input id="plantFilter"/>
-                </VBox>
+                        <Label text="Plant" required="true"/>
+                        <Input id="inpPlant3" />
+                    </f:content>
+                </f:SimpleForm>
 
-                <VBox class="sapUiTinyMarginEnd">
-                    <Label text="Material"/>
-                    <Input id="materialFilter"/>
-                </VBox>
+                <f:SimpleForm
+                    id="copyFromForm3"
+                    title="Copy From"
+                    editable="true"
+                    layout="ResponsiveGridLayout"
+                    labelSpanXL="3" labelSpanL="3" labelSpanM="4" labelSpanS="12"
+                    adjustLabelSpan="false"
+                    emptySpanXL="6" emptySpanL="5" emptySpanM="2" emptySpanS="0"
+                    columnsXL="1" columnsL="1" columnsM="1"
+                    singleContainerFullSize="false">
+                    <f:content>
+                        <Label text="Material"/>
+                        <Input id="inpCopyMaterial3" showValueHelp="true"/>
 
-                <VBox>
-                    <Label text="BOM Usage"/>
-                    <Input id="usageFilter"/>
-                </VBox>
-            </HBox>
+                        <Label text="Plant"/>
+                        <Input id="inpCopyPlant3" />
 
-            <Button text="Go" type="Emphasized" press="onSearch"/>
-        </HBox>
+                        <Label text="Alternative BOM"/>
+                        <HBox alignItems="Center">
+                            <Input id="inpCopyAltBom3" />
+                            <Button icon="sap-icon://arrow-right" class="sapUiTinyMarginBegin"/>
+                        </HBox>
+                    </f:content>
+                </f:SimpleForm>
 
-    </VBox>
+            </VBox>
+        </content>
 
-    <!-- 🔹 TOOLBAR -->
-    <Toolbar>
-        <Title text="BOMs"/>
-        <ToolbarSpacer/>
-
-        <Button text="Delete" type="Reject" press="onDelete"/>
-        <Button text="Create" type="Emphasized" press="onCreate"/>
-    </Toolbar>
-
-    <!-- 🔹 TABLE -->
-    <Table
-        id="bomTable"
-        mode="MultiSelect"
-        items="{/ZC_BOM_HEADER}">
-
-        <columns>
-            <Column>
-                <header><Text text="Plant"/></header>
-            </Column>
-            <Column>
-                <header><Text text="Material"/></header>
-            </Column>
-            <Column>
-                <header><Text text="Usage"/></header>
-            </Column>
-            <Column width="50px">
-                <header><Text text=""/></header>
-            </Column>
-        </columns>
-
-        <items>
-            <ColumnListItem type="Navigation" press="onNavigate">
-
-                <cells>
-                    <Text text="{Plant}"/>
-                    <Text text="{Material}"/>
-                    <Text text="{BomUsage}"/>
-
-                    <!-- 🔹 Arrow like RAP -->
-                    <Button icon="sap-icon://navigation-right-arrow" type="Transparent"/>
-                </cells>
-
-            </ColumnListItem>
-        </items>
-
-    </Table>
-
-</Page>
+        <footer>
+            <OverflowToolbar>
+                <ToolbarSpacer/>
+                <Button text="Continue" type="Emphasized" press=".onContinue"/>
+                <Button text="Cancel" press=".onCancel"/>
+            </OverflowToolbar>
+        </footer>
+    </Page>
 </mvc:View>

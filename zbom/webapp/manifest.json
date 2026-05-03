@@ -3,32 +3,70 @@
   "sap.app": {
     "id": "zbom",
     "type": "application",
+    "title": "Material BOM Creation",
+    "description": "SAPUI5 Application for BOM Management",
     "dataSources": {
       "mainService": {
         "uri": "/sap/opu/odata/sap/ZSB_BOM_CREATION/",
         "type": "OData",
         "settings": {
-          "odataVersion": "2.0"
+          "odataVersion": "2.0",
+          "localUri": "localService/metadata.xml"
         }
       }
     }
   },
+  "sap.ui": {
+    "technology": "UI5",
+    "fullWidth": true
+  },
   "sap.ui5": {
+    "flexEnabled": false,
     "rootView": {
       "viewName": "zbom.view.App",
       "type": "XML",
       "id": "app",
       "async": true
     },
+    "dependencies": {
+      "minUI5Version": "1.80.0",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.ui.layout": {},
+        "sap.f": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
     "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "zbom.i18n.i18n"
+        }
+      },
+      "headerModel": {
+        "type": "sap.ui.model.json.JSONModel",
+        "settings": {}
+      },
       "": {
-        "type": "sap.ui.model.odata.v2.ODataModel",
         "dataSource": "mainService",
+        "preload": true,
         "settings": {
           "defaultBindingMode": "TwoWay",
           "useBatch": true
         }
       }
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ]
     },
     "routing": {
       "config": {
@@ -40,16 +78,26 @@
         "async": true
       },
       "routes": [
-        { "name": "RouteView1", "pattern": "", "target": "TargetView1" },
-        { "name": "RouteCreate", "pattern": "create", "target": "TargetCreate" },
-        { "name": "RouteDetail", "pattern": "detail/{BomId}", "target": "TargetDetail" },
-        { "name": "RouteItem", "pattern": "item/{BomId}", "target": "TargetItem" }
+        {
+          "name": "RouteView1",
+          "pattern": "",
+          "target": "TargetView1"
+        },
+        {
+          "name": "RouteBOMItem",
+          "pattern": "BOMItem",
+          "target": "TargetBOMItem"
+        }
       ],
       "targets": {
-        "TargetView1": { "viewName": "View1", "viewLevel": 1 },
-        "TargetCreate": { "viewName": "BOMCreate", "viewLevel": 2 },
-        "TargetDetail": { "viewName": "BOMDetail", "viewLevel": 2 },
-        "TargetItem": { "viewName": "BOMItem", "viewLevel": 3 }
+        "TargetView1": {
+          "viewName": "View1",
+          "viewLevel": 1
+        },
+        "TargetBOMItem": {
+          "viewName": "BOMItem",
+          "viewLevel": 2
+        }
       }
     }
   }

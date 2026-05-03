@@ -1,60 +1,87 @@
 <mvc:View
     controllerName="zbom.controller.BOMItem"
     xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
     xmlns:f="sap.ui.layout.form"
     xmlns:core="sap.ui.core"
-    xmlns="sap.m">
-    <Page title="New Object - BOM - BOM Item" showNavButton="true" navButtonPress="onNavBack">
+    displayBlock="true">
+
+    <Page id="pageBOMItems" title="Create Material BOM" showNavButton="true" navButtonPress=".onNavBack">
         <content>
-            <VBox class="sapUiSmallMargin">
-                <Title text="General Information" level="H2" class="sapUiSmallMarginBottom"/>
-                
-                <f:SimpleForm editable="true" layout="ResponsiveGridLayout" columnsL="3" columnsM="2">
+            <!-- Header Section with Responsive Padding -->
+            <VBox class="sapUiResponsiveContentPadding">
+                <f:SimpleForm
+                    id="headerForm"
+                    title="BOM Header Information"
+                    editable="false"
+                    layout="ResponsiveGridLayout"
+                    labelSpanXL="3" labelSpanL="3" labelSpanM="4" labelSpanS="12"
+                    columnsXL="2" columnsL="2" columnsM="1">
                     <f:content>
-                        <Label text="Item Number"/>
-                        <Text text="-"/>
-                        
-                        <!-- <Label text="Item Category"/>
-                        <Input id="itmCategoryInput"/> -->
+                        <Label text="Material"/>
+                        <Text text="{headerModel>/Material}"/>
 
-                        <Label text="Item Category"/>
-<Select id="itmCategoryInput">
-    <items>
-        <core:Item key="L" text="Stock Item"/>
-        <core:Item key="N" text="Non-Stock"/>
-        <core:Item key="T" text="Text Item"/>
-    </items>
-</Select>
+                        <Label text="Plant"/>
+                        <Text text="{headerModel>/Plant}"/>
 
-                        <Label text="Component"/>
-                        <Input id="itmComponentInput"/>
-
-                        <Label text="Material Description"/>
-                        <Input id="itmMatDescInput"/>
-
-                        <Label text="Quantity"/>
-                        <Input id="itmQtyInput"/>
-
-                        <Label text="Unit of Measure"/>
-                        <Input id="itmUomInput"/>
-
-                        <Label text="Short String"/>
-                        <Input id="itmShortStringInput"/>
-
-                        <Label text="Item Text"/>
-                        <Input id="itmTextInput"/>
-
-                        <Label text="Selected Flag"/>
-                        <Input id="itmFlagInput"/>
+                        <Label text="Alternative BOM"/>
+                        <Text text="{headerModel>/AltBom}"/>
                     </f:content>
                 </f:SimpleForm>
+
+                <!-- Items Table Section -->
+                <Table id="bomItemsTable" 
+                       inset="false" 
+                       growing="true" 
+                       items="{/items}" 
+                       mode="MultiSelect" 
+                       sticky="ColumnHeaders,HeaderToolbar"
+                       class="sapUiSmallMarginTop">
+                    <headerToolbar>
+                        <OverflowToolbar>
+                            <Title text="BOM Items" level="H3"/>
+                            <ToolbarSpacer/>
+                            <Button text="Delete" icon="sap-icon://delete" type="Reject" press=".onDelete"/>
+                            <Button text="Selected Copy" icon="sap-icon://copy" press=".onSelectedCopy"/>
+                            <Button text="Select All" icon="sap-icon://multi-select" press=".onSelectAll"/>
+                            <Button icon="sap-icon://add" type="Emphasized" press=".onAddRow"/>
+                        </OverflowToolbar>
+                    </headerToolbar>
+                    
+                    <columns>
+                        <Column width="4rem" hAlign="Center"><Text text="Item"/></Column>
+                        <Column minScreenWidth="Tablet" demandPopin="true"><Text text="Component"/></Column>
+                        <Column minScreenWidth="Tablet" demandPopin="true"><Text text="Description"/></Column>
+                        <Column width="8rem" hAlign="End" minScreenWidth="Tablet" demandPopin="true"><Text text="Quantity"/></Column>
+                        <Column width="5rem" minScreenWidth="Desktop" demandPopin="true"><Text text="UoM"/></Column>
+                        <Column minScreenWidth="Desktop" demandPopin="true"><Text text="Sort String"/></Column>
+                        <Column width="3rem" hAlign="Center" minScreenWidth="Desktop" demandPopin="true"><Text text="C"/></Column>
+                        <Column minScreenWidth="Desktop" demandPopin="true"><Text text="Item Text"/></Column>
+                    </columns>
+
+                    <items>
+                        <ColumnListItem vAlign="Middle">
+                            <cells>
+                                <Text text="{item}"/>
+                                <Input value="{component}" showValueHelp="true"/>
+                                <Text text="{description}"/>
+                                <Input value="{quantity}" textAlign="End" type="Number"/>
+                                <Input value="{uom}" width="4rem"/>
+                                <Input value="{sortString}"/>
+                                <Input value="{category}" width="2.5rem"/>
+                                <Input value="{itemText}"/>
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
             </VBox>
         </content>
+
         <footer>
             <OverflowToolbar>
                 <ToolbarSpacer/>
-                <Button text="Create" type="Emphasized" press="onCreateItem"/>
-                <Button text="Cancel" press="onNavBack"/>
+                <Button text="Save" type="Emphasized" icon="sap-icon://save" press=".onSave"/>
+                <Button text="Cancel" press=".onCancel"/>
             </OverflowToolbar>
         </footer>
     </Page>

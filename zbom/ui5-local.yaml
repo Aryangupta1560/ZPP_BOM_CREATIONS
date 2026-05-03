@@ -32,6 +32,8 @@ server:
         backend:
           - path: /sap
             url: https://my433482-api.s4hana.cloud.sap
+            username: BAS_USER
+            password: FyfGjZXxZwtPu(uVR5XBqobbgDLVsahveXMQlmAe
     - name: sap-fe-mockserver
       beforeMiddleware: csp
       configuration:
@@ -42,3 +44,5 @@ server:
             mockdataPath: ./webapp/localService/mainService/data
             generateMockData: true
         annotations: []
+
+

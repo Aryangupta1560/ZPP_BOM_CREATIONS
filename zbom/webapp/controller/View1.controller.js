@@ -1,79 +1,24 @@
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
-    "sap/ui/model/Filter",
-    "sap/ui/model/FilterOperator",
     "sap/m/MessageToast"
-], function (Controller, Filter, FilterOperator, MessageToast) {
+], function (Controller, MessageToast) {
     "use strict";
 
     return Controller.extend("zbom.controller.View1", {
+        onContinue: function () {
+            var sMat = this.byId("inpMaterial3").getValue();
+            var sPlant = this.byId("inpPlant3").getValue();
 
-        // ✅ CREATE NAVIGATION
-        onCreate: function () {
-            this.getOwnerComponent().getRouter().navTo("RouteCreate");
-        },
-
-        // 🔍 FILTER
-        onSearch: function () {
-
-            var aFilters = [];
-
-            var sPlant = this.byId("plantFilter").getValue();
-            var sMaterial = this.byId("materialFilter").getValue();
-            var sUsage = this.byId("usageFilter").getValue();
-
-            if (sPlant) {
-                aFilters.push(new Filter("Plant", FilterOperator.Contains, sPlant));
-            }
-
-            if (sMaterial) {
-                aFilters.push(new Filter("Material", FilterOperator.Contains, sMaterial));
-            }
-
-            if (sUsage) {
-                aFilters.push(new Filter("BomUsage", FilterOperator.Contains, sUsage));
-            }
-
-            var oTable = this.byId("bomTable");
-            var oBinding = oTable.getBinding("items");
-
-            oBinding.filter(aFilters);
-        },
-
-        // 🗑 DELETE
-        onDelete: function () {
-
-            var oTable = this.byId("bomTable");
-            var aSelectedItems = oTable.getSelectedItems();
-
-            if (aSelectedItems.length === 0) {
-                MessageToast.show("Select at least one row");
+            if (!sMat || !sPlant) {
+                MessageToast.show("Please fill required fields.");
                 return;
             }
 
-            var oModel = this.getView().getModel();
-
-            aSelectedItems.forEach(function (oItem) {
-
-                var oContext = oItem.getBindingContext();
-                var sPath = oContext.getPath();
-
-                oModel.remove(sPath, {
-                    success: function () {
-                        MessageToast.show("Deleted");
-                    }
-                });
-
-            });
+            this.getOwnerComponent().getRouter().navTo("RouteBOMItem");
         },
 
-        // ➡ NAVIGATION ICON CLICK
-        onNavigate: function (oEvent) {
-            var oContext = oEvent.getSource().getBindingContext();
-            var sBomId = oContext.getProperty("BomId");
-
-            console.log("Navigate to:", sBomId);
+        onMaterialValueHelp: function () {
+            MessageToast.show("Value Help Requested");
         }
-
     });
 });
