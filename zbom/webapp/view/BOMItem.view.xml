@@ -41,10 +41,12 @@
                         <OverflowToolbar>
                             <Title text="BOM Items" level="H3"/>
                             <ToolbarSpacer/>
+                              <Button icon="sap-icon://add" type="Emphasized" press=".onAddRow"/>
                             <Button text="Delete" icon="sap-icon://delete" type="Reject" press=".onDelete"/>
-                            <Button text="Selected Copy" icon="sap-icon://copy" press=".onSelectedCopy"/>
+                            <!-- <Button text="Selected Copy" icon="sap-icon://copy" press=".onSelectedCopy"/> -->
+                            <Button text="Export Excel" icon="sap-icon://excel-attachment" press=".onExportExcel"/>
                             <Button text="Select All" icon="sap-icon://multi-select" press=".onSelectAll"/>
-                            <Button icon="sap-icon://add" type="Emphasized" press=".onAddRow"/>
+                            <!-- <Button icon="sap-icon://add" type="Emphasized" press=".onAddRow"/> -->
                         </OverflowToolbar>
                     </headerToolbar>
                     

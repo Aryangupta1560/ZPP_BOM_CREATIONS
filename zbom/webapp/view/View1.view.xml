@@ -13,7 +13,8 @@
                     <Title text="Material BOM Creation" level="H2" class="sapUiSmallMarginBegin"/>
                 </contentLeft>
                 <contentRight>
-                    <Button icon="sap-icon://action" type="Emphasized" press=".onExecute"/>
+                    <!-- <Button icon="sap-icon://action" type="Emphasized" press=".onExecute"/> -->
+                    <Button icon="sap-icon://action" type="Emphasized" press=".onContinue"/>
                     <Button icon="sap-icon://copy" class="sapUiSmallMarginEnd"/>
                 </contentRight>
             </Bar>
@@ -41,7 +42,7 @@
                         <Input id="inpBomUsage3" />
 
                         <Label text="Plant" required="true"/>
-                        <Input id="inpPlant3" />
+                        <Input id="inpPlant3" showValueHelp="true" valueHelpRequest=".onPlantValueHelp"/>
                     </f:content>
                 </f:SimpleForm>
 
@@ -57,13 +58,14 @@
                     singleContainerFullSize="false">
                     <f:content>
                         <Label text="Material"/>
-                        <Input id="inpCopyMaterial3" showValueHelp="true"/>
+                        <Input id="inpCopyMaterial3" showValueHelp="true" valueHelpRequest=".onMaterialValueHelp"/>
 
                         <Label text="Plant"/>
-                        <Input id="inpCopyPlant3" />
+                        <Input id="inpCopyPlant3" showValueHelp="true" valueHelpRequest=".onPlantValueHelp"/>
 
                         <Label text="Alternative BOM"/>
                         <HBox alignItems="Center">
+                        
                             <Input id="inpCopyAltBom3" />
                             <Button icon="sap-icon://arrow-right" class="sapUiTinyMarginBegin"/>
                         </HBox>
