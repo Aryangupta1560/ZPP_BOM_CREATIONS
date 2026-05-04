@@ -50,9 +50,9 @@ sap.ui.define([
     oModel.refresh();
 },
 
-        onSave: function () {
-            MessageToast.show("Data Saved");
-        },
+        // onSave: function () {
+        //     MessageToast.show("Data Saved");
+        // },
 
 onDelete: function () {
     var oTable = this.byId("bomItemsTable");
@@ -143,8 +143,31 @@ onExportExcel: function () {
         return oContext.getObject();
     });
 
+// ✅ Get Header Data
+    var oHeader = this.getOwnerComponent().getModel("headerModel").getData();
+
+        // ✅ Add header info inside each row (important trick)
+    aExportData = aExportData.map(function (oItem) {
+        return {
+            Material: oHeader.Material,
+            Plant: oHeader.Plant,
+            AltBom: oHeader.AltBom || "",
+            item: oItem.item,
+            component: oItem.component,
+            description: oItem.description,
+            quantity: oItem.quantity,
+            uom: oItem.uom,
+            sortString: oItem.sortString,
+            category: oItem.category,
+            itemText: oItem.itemText
+        };
+    });
+
     // Excel Columns
     var aCols = [
+        { label: "Material", property: "Material" },
+        { label: "Plant", property: "Plant" },
+        { label: "Alternative BOM", property: "AltBom" },
         { label: "Item", property: "item" },
         { label: "Component", property: "component" },
         { label: "Description", property: "description" },
@@ -167,7 +190,120 @@ onExportExcel: function () {
     oSpreadsheet.build().then(function () {
         MessageToast.show("Excel downloaded");
     });
+},
+
+onUomValueHelp: function (oEvent) {
+    var that = this;
+
+    // ✅ Get clicked row context
+    var oInput = oEvent.getSource();
+    this._oCurrentContext = oInput.getBindingContext();
+
+    var aData = [
+        { UoM: "KG", Desc: "Kilogram" },
+        { UoM: "M", Desc: "Meter" },
+        { UoM: "ST", Desc: "Set" },
+        { UoM: "NOS", Desc: "Numbers" }
+    ];
+
+    var oModel = new sap.ui.model.json.JSONModel(aData);
+
+    if (!this._oUomDialog) {
+        this._oUomDialog = new sap.m.Dialog({
+            title: "Select UoM",
+            contentWidth: "400px",
+            content: [
+                new sap.m.Table({
+                    mode: "SingleSelectMaster",
+                    includeItemInSelection: true,
+                    columns: [
+                        new sap.m.Column({
+                            header: new sap.m.Label({ text: "UoM" })
+                        }),
+                        new sap.m.Column({
+                            header: new sap.m.Label({ text: "Description" })
+                        })
+                    ],
+                    items: {
+                        path: "/",
+                        template: new sap.m.ColumnListItem({
+                            cells: [
+                                new sap.m.Text({ text: "{UoM}" }),
+                                new sap.m.Text({ text: "{Desc}" })
+                            ]
+                        })
+                    },
+                    selectionChange: function (oEvt) {
+                        var oItem = oEvt.getParameter("listItem");
+                        var oData = oItem.getBindingContext().getObject();
+
+                        // ✅ Update ONLY clicked row
+                        that._oCurrentContext.getModel().setProperty(
+                            that._oCurrentContext.getPath() + "/uom",
+                            oData.UoM
+                        );
+
+                        that._oUomDialog.close();
+                    }
+                })
+            ],
+            endButton: new sap.m.Button({
+                text: "Cancel",
+                press: function () {
+                    that._oUomDialog.close();
+                }
+            })
+        });
+    }
+
+    this._oUomDialog.setModel(oModel);
+    this._oUomDialog.open();
+},
+
+onSave: function () {
+
+    var oModel = this.getOwnerComponent().getModel(); // OData model
+
+    // 🔹 Header Data
+    var oHeader = this.getOwnerComponent().getModel("headerModel").getData();
+
+    // 🔹 Item Data
+    var aItems = this.getView().getModel().getProperty("/items");
+
+    if (!aItems || aItems.length === 0) {
+        sap.m.MessageToast.show("Add at least one item");
+        return;
+    }
+
+    // 🔥 Deep Insert Payload
+    var oPayload = {
+    Material: oHeader.Material,
+    Plant: oHeader.Plant,
+    BomUsage: oHeader.BomUsage || "1",
+
+    to_Item: aItems.map(function (oItem) {
+        return {
+            Component: oItem.component,
+        Quantity: oItem.quantity ? parseFloat(oItem.quantity) : 0,   // ✅ FIX
+            Uom: oItem.uom,
+            SortString: oItem.sortString || "",
+            ItemText: oItem.itemText || ""
+        };
+    })
+};
+
+    // 🔥 POST Call
+    oModel.create("/ZC_BOM_HEADER", oPayload, {
+        success: function () {
+            sap.m.MessageToast.show("BOM Created Successfully");
+        },
+        error: function (oError) {
+            console.error(oError);
+            sap.m.MessageToast.show("Error while saving");
+        }
+    });
 }
+
 
     });
 });

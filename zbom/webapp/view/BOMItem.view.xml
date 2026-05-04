@@ -26,6 +26,7 @@
 
                         <Label text="Alternative BOM"/>
                         <Text text="{headerModel>/AltBom}"/>
+                        
                     </f:content>
                 </f:SimpleForm>
 
@@ -46,10 +47,9 @@
                             <!-- <Button text="Selected Copy" icon="sap-icon://copy" press=".onSelectedCopy"/> -->
                             <Button text="Export Excel" icon="sap-icon://excel-attachment" press=".onExportExcel"/>
                             <Button text="Select All" icon="sap-icon://multi-select" press=".onSelectAll"/>
-                            <!-- <Button icon="sap-icon://add" type="Emphasized" press=".onAddRow"/> -->
                         </OverflowToolbar>
                     </headerToolbar>
-                    
+                
                     <columns>
                         <Column width="4rem" hAlign="Center"><Text text="Item"/></Column>
                         <Column minScreenWidth="Tablet" demandPopin="true"><Text text="Component"/></Column>
@@ -57,7 +57,7 @@
                         <Column width="8rem" hAlign="End" minScreenWidth="Tablet" demandPopin="true"><Text text="Quantity"/></Column>
                         <Column width="5rem" minScreenWidth="Desktop" demandPopin="true"><Text text="UoM"/></Column>
                         <Column minScreenWidth="Desktop" demandPopin="true"><Text text="Sort String"/></Column>
-                        <Column width="3rem" hAlign="Center" minScreenWidth="Desktop" demandPopin="true"><Text text="C"/></Column>
+                        <Column width="5rem" hAlign="Center" minScreenWidth="Desktop" demandPopin="true"><Text text="Category"/></Column>
                         <Column minScreenWidth="Desktop" demandPopin="true"><Text text="Item Text"/></Column>
                     </columns>
 
@@ -68,7 +68,7 @@
                                 <Input value="{component}" showValueHelp="true"/>
                                 <Text text="{description}"/>
                                 <Input value="{quantity}" textAlign="End" type="Number"/>
-                                <Input value="{uom}" width="4rem"/>
+                                <Input value="{uom}" width="4.5rem" showValueHelp="true" valueHelpRequest=".onUomValueHelp"/>
                                 <Input value="{sortString}"/>
                                 <Input value="{category}" width="2.5rem"/>
                                 <Input value="{itemText}"/>

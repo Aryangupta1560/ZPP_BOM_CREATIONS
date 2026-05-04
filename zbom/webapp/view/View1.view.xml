@@ -38,11 +38,11 @@
                         <Label text="Material" required="true"/>
                         <Input id="inpMaterial3" showValueHelp="true" valueHelpRequest=".onMaterialValueHelp"/>
 
-                        <Label text="BOM Usage" required="true"/>
-                        <Input id="inpBomUsage3" />
-
                         <Label text="Plant" required="true"/>
                         <Input id="inpPlant3" showValueHelp="true" valueHelpRequest=".onPlantValueHelp"/>
+
+                        <Label text="BOM Usage" required="true"/>
+                        <Input id="inpBomUsage3" showValueHelp="true" valueHelpRequest=".onBomUsageValueHelp"/>
                     </f:content>
                 </f:SimpleForm>
 

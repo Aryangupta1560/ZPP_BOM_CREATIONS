@@ -16,6 +16,7 @@
       }
     }
   },
+
   "sap.ui": {
     "technology": "UI5",
     "fullWidth": true
@@ -34,7 +35,8 @@
         "sap.m": {},
         "sap.ui.core": {},
         "sap.ui.layout": {},
-        "sap.f": {}
+        "sap.f": {},
+        "sap.ui.comp": {}
       }
     },
     "contentDensities": {
