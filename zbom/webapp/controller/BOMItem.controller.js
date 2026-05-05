@@ -195,69 +195,110 @@ onExportExcel: function () {
 onUomValueHelp: function (oEvent) {
     var that = this;
 
-    // ✅ Get clicked row context
+    // Get clicked row context
     var oInput = oEvent.getSource();
     this._oCurrentContext = oInput.getBindingContext();
 
-    var aData = [
-        { UoM: "KG", Desc: "Kilogram" },
-        { UoM: "M", Desc: "Meter" },
-        { UoM: "ST", Desc: "Set" },
-        { UoM: "NOS", Desc: "Numbers" }
-    ];
+    if (!this._oUomVHD) {
 
-    var oModel = new sap.ui.model.json.JSONModel(aData);
+        // --- Filter Search ---
+        var fnDoSearch = function () {
+            var aFilters = [];
+            var aItems = oFilterBar.getFilterGroupItems();
 
-    if (!this._oUomDialog) {
-        this._oUomDialog = new sap.m.Dialog({
-            title: "Select UoM",
-            contentWidth: "400px",
-            content: [
-                new sap.m.Table({
-                    mode: "SingleSelectMaster",
-                    includeItemInSelection: true,
-                    columns: [
-                        new sap.m.Column({
-                            header: new sap.m.Label({ text: "UoM" })
-                        }),
-                        new sap.m.Column({
-                            header: new sap.m.Label({ text: "Description" })
-                        })
-                    ],
-                    items: {
-                        path: "/",
-                        template: new sap.m.ColumnListItem({
-                            cells: [
-                                new sap.m.Text({ text: "{UoM}" }),
-                                new sap.m.Text({ text: "{Desc}" })
-                            ]
-                        })
-                    },
-                    selectionChange: function (oEvt) {
-                        var oItem = oEvt.getParameter("listItem");
-                        var oData = oItem.getBindingContext().getObject();
-
-                        // ✅ Update ONLY clicked row
-                        that._oCurrentContext.getModel().setProperty(
-                            that._oCurrentContext.getPath() + "/uom",
-                            oData.UoM
-                        );
-
-                        that._oUomDialog.close();
-                    }
-                })
-            ],
-            endButton: new sap.m.Button({
-                text: "Cancel",
-                press: function () {
-                    that._oUomDialog.close();
+            aItems.forEach(function (oItem) {
+                var sValue = oItem.getControl().getValue();
+                if (sValue) {
+                    aFilters.push(new sap.ui.model.Filter(
+                        oItem.getName(),
+                        sap.ui.model.FilterOperator.Contains,
+                        sValue
+                    ));
                 }
+            });
+
+            that._oUomTable.getBinding("items").filter(aFilters);
+        };
+
+        // --- Filter Bar ---
+        var oFilterBar = new sap.ui.comp.filterbar.FilterBar({
+            showFilterConfiguration: false,
+            showGoOnFB: false,
+            filterBarExpanded: true,
+            useToolbar: false,
+            filterGroupItems: [
+                new sap.ui.comp.filterbar.FilterGroupItem({
+                    groupName: "basic",
+                    name: "UnitOfMeasure",
+                    label: "UoM",
+                    visibleInFilterBar: true,
+                    control: new sap.m.Input({
+                        submit: fnDoSearch
+                    })
+                }),
+                new sap.ui.comp.filterbar.FilterGroupItem({
+                    groupName: "basic",
+                    name: "UnitOfMeasure_Text",
+                    label: "Description",
+                    visibleInFilterBar: true,
+                    control: new sap.m.Input({
+                        submit: fnDoSearch
+                    })
+                })
+            ]
+        });
+
+        // --- Table ---
+        this._oUomTable = new sap.m.Table({
+            growing: true,
+            growingThreshold: 500,
+            mode: "None",
+            columns: [
+                new sap.m.Column({ header: new sap.m.Label({ text: "UoM" }) }),
+                new sap.m.Column({ header: new sap.m.Label({ text: "Description" }) })
+            ]
+        });
+
+        this._oUomTable.bindItems({
+            path: "/I_UnitOfMeasure",
+            template: new sap.m.ColumnListItem({
+                type: "Active",
+                cells: [
+                    new sap.m.Text({ text: "{UnitOfMeasure}" }),
+                    new sap.m.Text({ text: "{UnitOfMeasure_Text}" })
+                ]
             })
         });
+
+        // --- Row Click Selection ---
+        this._oUomTable.attachItemPress(function (oEvent) {
+            var oData = oEvent.getParameter("listItem").getBindingContext().getObject();
+
+            that._oCurrentContext.getModel().setProperty(
+                that._oCurrentContext.getPath() + "/uom",
+                oData.UnitOfMeasure
+            );
+
+            that._oUomVHD.close();
+        });
+
+        // --- Dialog ---
+        this._oUomVHD = new sap.ui.comp.valuehelpdialog.ValueHelpDialog({
+            title: "Select UoM",
+            supportMultiselect: false,
+            filterBar: oFilterBar,
+            stretch: false,
+            contentWidth: "60%",
+            contentHeight: "60%",
+            ok: function () { that._oUomVHD.close(); },
+            cancel: function () { that._oUomVHD.close(); }
+        });
+
+        this._oUomTable.setModel(this.getOwnerComponent().getModel());
+        this._oUomVHD.setTable(this._oUomTable);
     }
 
-    this._oUomDialog.setModel(oModel);
-    this._oUomDialog.open();
+    this._oUomVHD.open();
 },
 
 onSave: function () {
@@ -271,7 +312,7 @@ onSave: function () {
     var aItems = this.getView().getModel().getProperty("/items");
 
     if (!aItems || aItems.length === 0) {
-        sap.m.MessageToast.show("Add at least one item");
+        sap.m.MessageToast.show("Add at least one UOM");
         return;
     }
 
