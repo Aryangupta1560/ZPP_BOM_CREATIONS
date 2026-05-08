@@ -59,17 +59,17 @@
                     singleContainerFullSize="false">
                     <f:content>
                         <Label text="Material"/>
-                        <Input id="inpCopyMaterial3" showValueHelp="true" valueHelpRequest=".onMaterialValueHelp"/>
+                        <Input id="inpCopyMaterial3" showValueHelp="true" valueHelpRequest=".onCopyMaterialValueHelp"/>
 
                         <Label text="Plant"/>
-                        <Input id="inpCopyPlant3" showValueHelp="true" valueHelpRequest=".onPlantValueHelp"/>
+                        <Input id="inpCopyPlant3" showValueHelp="true" valueHelpRequest=".onCopyPlantValueHelp"/>
 
                         <Label text="Alternative BOM"/>
                         <HBox alignItems="Center">
-                        
-                            <Input id="inpCopyAltBom3" />
-                            <Button icon="sap-icon://arrow-right" class="sapUiTinyMarginBegin"/>
+                        <Input id="inpCopyAltBom3" />
+                        <Button icon="sap-icon://arrow-right" class="sapUiTinyMarginBegin"/>
                         </HBox>
+
                     </f:content>
                 </f:SimpleForm>
 

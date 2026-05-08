@@ -10,18 +10,35 @@ sap.ui.define([
 
     return Controller.extend("zbom.controller.BOMItem", {
         onInit: function () {
-            var oModel = new sap.ui.model.json.JSONModel({ items: [] });
-            this.getView().setModel(oModel);
-        },
+    var oModel = new sap.ui.model.json.JSONModel({ items: [] });
+    this.getView().setModel(oModel);
 
-        onNavBack: function () {
-            var sPreviousHash = History.getInstance().getPreviousHash();
-            if (sPreviousHash !== undefined) {
-                window.history.go(-1);
-            } else {
-                this.getOwnerComponent().getRouter().navTo("RouteView1", {}, true);
-            }
-        },
+    // Route match hone pe items pre-fill karo
+    var oRouter = this.getOwnerComponent().getRouter();
+    oRouter.getRoute("RouteBOMItem").attachPatternMatched(this._onRouteMatched, this);
+},
+
+_onRouteMatched: function () {
+    // Copy Items Model check karo
+    var oCopyItemsModel = this.getOwnerComponent().getModel("copyItemsModel");
+
+    if (oCopyItemsModel) {
+        var aCopyItems = oCopyItemsModel.getProperty("/items");
+
+        if (aCopyItems && aCopyItems.length > 0) {
+            // Items table mein set karo
+            var oModel = this.getView().getModel();
+            oModel.setProperty("/items", aCopyItems);
+
+            // Model clear karo — dobara na aaye
+            this.getOwnerComponent().setModel(null, "copyItemsModel");
+        }
+    } else {
+        // Fresh start — empty table
+        var oViewModel = this.getView().getModel();
+        oViewModel.setProperty("/items", []);
+    }
+},
 
         // onAddRow: function () {
         //     var oModel = this.getView().getModel();
@@ -303,44 +320,72 @@ onUomValueHelp: function (oEvent) {
 
 onSave: function () {
 
-    var oModel = this.getOwnerComponent().getModel(); // OData model
-
-    // 🔹 Header Data
+    var that = this;
+    var oModel = this.getOwnerComponent().getModel();
     var oHeader = this.getOwnerComponent().getModel("headerModel").getData();
-
-    // 🔹 Item Data
     var aItems = this.getView().getModel().getProperty("/items");
 
     if (!aItems || aItems.length === 0) {
-        sap.m.MessageToast.show("Add at least one UOM");
+        sap.m.MessageToast.show("Add at least one item");
         return;
     }
 
-    // 🔥 Deep Insert Payload
+    // 🔹 Sirf header bhejo — to_Item nahi
+    // save_modified backend pe items copy karega
     var oPayload = {
-    Material: oHeader.Material,
-    Plant: oHeader.Plant,
-    BomUsage: oHeader.BomUsage || "1",
+        Material: oHeader.Material,
+        Plant: oHeader.Plant,
+        BomUsage: oHeader.BomUsage || "1",
+        CopyMaterial: oHeader.CopyMaterial || "",
+        CopyPlant: oHeader.CopyPlant || "",
+        CopyAltBom: oHeader.CopyAltBom || ""
+        // ← to_Item bilkul mat bhejo
+    };
 
-    to_Item: aItems.map(function (oItem) {
-        return {
-            Component: oItem.component,
-        Quantity: oItem.quantity ? parseFloat(oItem.quantity) : 0,   // ✅ FIX
-            Uom: oItem.uom,
-            SortString: oItem.sortString || "",
-            ItemText: oItem.itemText || ""
-        };
-    })
-};
+    // ✅ Agar Copy From nahi bhara — to_Item bhejo
+if (!oHeader.CopyMaterial || !oHeader.CopyPlant || !oHeader.CopyAltBom) {
+    oPayload.to_Item = {
+        results: aItems.map(function (oItem) {
+            return {
+                Component: oItem.component || "",
+                Quantity: oItem.quantity ? oItem.quantity.toString() : "0",
+                Uom: oItem.uom || "",
+                SortString: oItem.sortString || "",
+                ItemText: oItem.itemText || "",
+                ItemCategory: oItem.category || "L"
+            };
+        })
+    };
+}
 
-    // 🔥 POST Call
     oModel.create("/ZC_BOM_HEADER", oPayload, {
-        success: function () {
-            sap.m.MessageToast.show("BOM Created Successfully");
+        success: function (oResponse) {
+            var iAltBom = oResponse.AltBom;
+
+            var oHeaderModel = that.getOwnerComponent().getModel("headerModel");
+            oHeaderModel.setProperty("/AltBom", iAltBom);
+
+            sap.m.MessageBox.success(
+                "BOM Created Successfully!\n" +
+                "Material: " + oResponse.Material + "\n" +
+                "Plant: " + oResponse.Plant + "\n" +
+                "Alternative BOM: " + iAltBom,
+                {
+                    onClose: function () {
+                        that.getOwnerComponent().getRouter().navTo("RouteView1", {}, true);
+                    }
+                }
+            );
         },
         error: function (oError) {
-            console.error(oError);
-            sap.m.MessageToast.show("Error while saving");
+            var sMessage = "Error while saving BOM.";
+            try {
+                var oErrorBody = JSON.parse(oError.responseText);
+                if (oErrorBody.error && oErrorBody.error.message) {
+                    sMessage = oErrorBody.error.message.value;
+                }
+            } catch (e) {}
+            sap.m.MessageBox.error(sMessage);
         }
     });
 }
