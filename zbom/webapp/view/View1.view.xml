@@ -10,6 +10,7 @@
         <customHeader>
             <Bar>
                 <contentLeft>
+                    <Image src="img/expound-logo.png" height="1.75rem" densityAware="false" class="sapUiTinyMarginBegin sapUiTinyMarginEnd"/>
                     <Title text="Material BOM Creation" level="H2" class="sapUiSmallMarginBegin"/>
                 </contentLeft>
                 <contentRight>

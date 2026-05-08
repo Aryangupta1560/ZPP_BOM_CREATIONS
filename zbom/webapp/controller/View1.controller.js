@@ -1,4 +1,5 @@
-sap.ui.define([
+sap.ui.define(
+  [
     "sap/ui/core/mvc/Controller",
     "sap/m/MessageToast",
     "sap/ui/comp/valuehelpdialog/ValueHelpDialog",
@@ -6,74 +7,157 @@ sap.ui.define([
     "sap/ui/comp/filterbar/FilterGroupItem",
     "sap/m/Input",
     "sap/ui/model/Filter",
-    "sap/ui/model/FilterOperator"
-], function (Controller, MessageToast, ValueHelpDialog, FilterBar, FilterGroupItem, Input, Filter, FilterOperator){
+    "sap/ui/model/FilterOperator",
+  ],
+  function (
+    Controller,
+    MessageToast,
+    ValueHelpDialog,
+    FilterBar,
+    FilterGroupItem,
+    Input,
+    Filter,
+    FilterOperator,
+  ) {
     "use strict";
 
     return Controller.extend("zbom.controller.View1", {
-        onContinue: function () {
-            var sMat = this.byId("inpMaterial3").getValue();
-            var sPlant = this.byId("inpPlant3").getValue();
+      onContinue: function () {
+        var sMatDisplay = this.byId("inpMaterial3").getValue();
+        var sMat =
+          this._oSelectedMaterial && this._oSelectedMaterial.Product
+            ? this._oSelectedMaterial.Product
+            : sMatDisplay;
 
-            if (!sMat || !sPlant) {
-                MessageToast.show("Please fill required fields.");
-                return;
+        var sPlantDisplay = this.byId("inpPlant3").getValue();
+        var sPlant =
+          this._oSelectedPlant && this._oSelectedPlant.Plant
+            ? this._oSelectedPlant.Plant
+            : sPlantDisplay;
+
+        var sBomUsageDisplay = this.byId("inpBomUsage3").getValue();
+        var sBomUsage =
+          this._oSelectedBomUsage && this._oSelectedBomUsage.Usage
+            ? this._oSelectedBomUsage.Usage
+            : sBomUsageDisplay;
+
+        if (!sMatDisplay || !sPlantDisplay || !sBomUsageDisplay) {
+          MessageToast.show("Please fill required fields.");
+          return;
+        }
+
+        var oHeaderData = {
+          Material: sMat,
+          Plant: sPlant,
+          Usage: sBomUsage,
+          BomUsage: sBomUsage,
+          BomUsageText:
+            this._oSelectedBomUsage && this._oSelectedBomUsage.UsageText
+              ? this._oSelectedBomUsage.UsageText
+              : sBomUsageDisplay,
+          MaterialDescription:
+            this._oSelectedMaterial &&
+            this._oSelectedMaterial.ProductDescription
+              ? this._oSelectedMaterial.ProductDescription
+              : sMatDisplay,
+          PlantDescription:
+            this._oSelectedPlant && this._oSelectedPlant.PlantName
+              ? this._oSelectedPlant.PlantName
+              : sPlantDisplay,
+        };
+
+        var oModel = new sap.ui.model.json.JSONModel(oHeaderData);
+        this.getOwnerComponent().setModel(oModel, "headerModel");
+
+        this.getOwnerComponent().getRouter().navTo("RouteBOMItem");
+      },
+
+      onInit: function () {
+        this._oSelectedMaterial = null;
+        this._oSelectedPlant = null;
+        this._oSelectedBomUsage = null;
+
+        this.byId("inpMaterial3").attachLiveChange(
+          function (oEvent) {
+            var sCurrentValue = oEvent.getParameter("value");
+            if (
+              !this._oSelectedMaterial ||
+              sCurrentValue !== this._oSelectedMaterial.ProductDescription
+            ) {
+              this._oSelectedMaterial = null;
             }
+          }.bind(this),
+        );
 
-// ✅ Create JSON model and store data
-    var oHeaderData = {
-        Material: sMat,
-        Plant: sPlant,
-        // Usage: sUsage
-    };
+        this.byId("inpPlant3").attachLiveChange(
+          function (oEvent) {
+            var sCurrentValue = oEvent.getParameter("value");
+            if (
+              !this._oSelectedPlant ||
+              sCurrentValue !== this._oSelectedPlant.PlantName
+            ) {
+              this._oSelectedPlant = null;
+            }
+          }.bind(this),
+        );
 
-var oModel = new sap.ui.model.json.JSONModel(oHeaderData);
-    this.getOwnerComponent().setModel(oModel, "headerModel");
+        this.byId("inpBomUsage3").attachLiveChange(
+          function (oEvent) {
+            var sCurrentValue = oEvent.getParameter("value");
+            if (
+              !this._oSelectedBomUsage ||
+              sCurrentValue !== this._oSelectedBomUsage.UsageText
+            ) {
+              this._oSelectedBomUsage = null;
+            }
+          }.bind(this),
+        );
 
-            this.getOwnerComponent().getRouter().navTo("RouteBOMItem");
-        },
+        var oRouter = this.getOwnerComponent().getRouter();
+        oRouter
+          .getRoute("RouteView1")
+          .attachPatternMatched(this._onRouteMatched, this);
+      },
 
-           onInit: function () {
-    var oRouter = this.getOwnerComponent().getRouter();
-    oRouter.getRoute("RouteView1").attachPatternMatched(this._onRouteMatched, this);
-},
+      _onRouteMatched: function () {
+        this._resetForm();
+      },
 
-_onRouteMatched: function () {
-    this._resetForm();
-},
+      _resetForm: function () {
+        this._oSelectedMaterial = null;
+        this._oSelectedPlant = null;
+        this._oSelectedBomUsage = null;
 
-_resetForm: function () {
-    this.byId("inpMaterial3").setValue("");
-    this.byId("inpPlant3").setValue("");
-    this.byId("inpBomUsage3").setValue("");
-    this.byId("inpCopyMaterial3").setValue("");
-    this.byId("inpCopyPlant3").setValue("");
-    this.byId("inpCopyAltBom3").setValue("");
-},
+        this.byId("inpMaterial3").setValue("");
+        this.byId("inpPlant3").setValue("");
+        this.byId("inpBomUsage3").setValue("");
+        this.byId("inpCopyMaterial3").setValue("");
+        this.byId("inpCopyPlant3").setValue("");
+        this.byId("inpCopyAltBom3").setValue("");
+      },
 
-onCancel: function () {
-    this._resetForm();
-    sap.m.MessageToast.show("Form cleared");
-},
+      onCancel: function () {
+        this._resetForm();
+        sap.m.MessageToast.show("Form cleared");
+      },
 
-onBomUsageValueHelp: function () {
-    var that = this;
+      onBomUsageValueHelp: function () {
+        var that = this;
 
-    var aData = [
-        { Usage: "1", UsageText: "Production" },
-        { Usage: "2", UsageText: "Engineering/Design" },
-        { Usage: "3", UsageText: "Universal" },
-        { Usage: "4", UsageText: "Plant Maintenance" },
-        { Usage: "5", UsageText: "Sales and Distribution" },
-        { Usage: "P", UsageText: "Predictive MRP" },
-        { Usage: "S", UsageText: "Service Management" }
-    ];
+        var aData = [
+          { Usage: "1", UsageText: "Production" },
+          { Usage: "2", UsageText: "Engineering/Design" },
+          { Usage: "3", UsageText: "Universal" },
+          { Usage: "4", UsageText: "Plant Maintenance" },
+          { Usage: "5", UsageText: "Sales and Distribution" },
+          { Usage: "P", UsageText: "Predictive MRP" },
+          { Usage: "S", UsageText: "Service Management" },
+        ];
 
-    var oModel = new sap.ui.model.json.JSONModel(aData);
+        var oModel = new sap.ui.model.json.JSONModel(aData);
 
-    // Create dialog once
-    if (!this._oVHD) {
-        this._oVHD = new ValueHelpDialog({
+        if (!this._oVHD) {
+          this._oVHD = new ValueHelpDialog({
             title: "Select BOM Usage",
             supportMultiselect: false,
             supportRanges: false,
@@ -81,344 +165,291 @@ onBomUsageValueHelp: function () {
             descriptionKey: "UsageText",
 
             ok: function (oEvent) {
-                var aTokens = oEvent.getParameter("tokens");
-                if (aTokens.length > 0) {
-                    that.byId("inpBomUsage3")
-                        .setValue(aTokens[0].getKey()); // ✅ ONLY VALUE (1,2)
-                }
-                that._oVHD.close();
+              var aTokens = oEvent.getParameter("tokens");
+              if (aTokens.length > 0) {
+                var sUsageKey = aTokens[0].getKey();
+                var oSelected = aData.find(function (oItem) {
+                  return oItem.Usage === sUsageKey;
+                });
+
+                that._oSelectedBomUsage = {
+                  Usage: sUsageKey,
+                  UsageText: oSelected ? oSelected.UsageText : sUsageKey,
+                };
+
+                that
+                  .byId("inpBomUsage3")
+                  .setValue(that._oSelectedBomUsage.UsageText);
+              }
+              that._oVHD.close();
             },
 
             cancel: function () {
-                that._oVHD.close();
-            }
-        });
+              that._oVHD.close();
+            },
+          });
 
-        // Create Table inside dialog
-        var oTable = new sap.m.Table({
+          var oTable = new sap.m.Table({
             columns: [
-                new sap.m.Column({
-                    header: new sap.m.Label({ text: "Usage" })
-                }),
-                new sap.m.Column({
-                    header: new sap.m.Label({ text: "Usage Text" })
-                })
-            ]
-        });
+              new sap.m.Column({
+                header: new sap.m.Label({ text: "Usage" }),
+              }),
+              new sap.m.Column({
+                header: new sap.m.Label({ text: "Usage Text" }),
+              }),
+            ],
+          });
 
-        oTable.bindItems({
+          oTable.bindItems({
             path: "/",
             template: new sap.m.ColumnListItem({
-                cells: [
-                    new sap.m.Text({ text: "{Usage}" }),
-                    new sap.m.Text({ text: "{UsageText}" })
-                ]
-            })
-        });
+              cells: [
+                new sap.m.Text({ text: "{Usage}" }),
+                new sap.m.Text({ text: "{UsageText}" }),
+              ],
+            }),
+          });
 
-        oTable.setMode("SingleSelectMaster");
-        oTable.setIncludeItemInSelection(true);
+          oTable.setMode("SingleSelectMaster");
+          oTable.setIncludeItemInSelection(true);
 
-
-oTable.attachSelectionChange(function (oEvent) {
-    var oItem = oEvent.getParameter("listItem");
-    var oData = oItem.getBindingContext().getObject();
-
-    that.byId("inpBomUsage3").setValue(oData.Usage); // only 1,2,3
-
-    that._oVHD.close(); // close dialog
-});
-
-        this._oVHD.setTable(oTable);
-        this._oVHD.setModel(oModel);
-    }
-
-    this._oVHD.open();
-},
-
-
-onMaterialValueHelp: function () {
-    var that = this;
-
-    if (!this._oMatVHD) {
-        // 1. Clean Filter Bar (No extra buttons)
-        var oFilterBar = new sap.ui.comp.filterbar.FilterBar({
-            showFilterConfiguration: false, // ❌ "Filters" button hatane ke liye
-            showGoOnFB: true,               // ✅ "Go" button dikhane ke liye
-            filterBarExpanded: true,        // ✅ Hamesha khula rahega
-            useToolbar: false,              // ❌ Extra toolbar hatane ke liye
-            filterGroupItems: [
-                new sap.ui.comp.filterbar.FilterGroupItem({
-                    groupName: "basic",
-                    name: "Product",
-                    label: "Product",
-                    visibleInFilterBar: true, // ✅ Direct dikhega
-                    control: new sap.m.Input()
-                }),
-                new sap.ui.comp.filterbar.FilterGroupItem({
-                    groupName: "basic",
-                    name: "ProductDescription",
-                    label: "Product Description",
-                    visibleInFilterBar: true, // ✅ Direct dikhega
-                    control: new sap.m.Input()
-                })
-            ],
-            search: function () {
-                var aFilters = [];
-                var aItems = oFilterBar.getFilterGroupItems();
-
-                aItems.forEach(function (oItem) {
-                    var sValue = oItem.getControl().getValue();
-                    if (sValue) {
-                        aFilters.push(new sap.ui.model.Filter(
-                            oItem.getName(),
-                            sap.ui.model.FilterOperator.Contains,
-                            sValue
-                        ));
-                    }
-                });
-                that._oTable.getBinding("items").filter(aFilters);
-            }
-        });
-
-        // 2. Simplified Table (No Radio Buttons, Row Click Active)
-        this._oTable = new sap.m.Table({
-            growing: true,
-            growingThreshold: 20,
-            mode: "None", 
-            columns: [
-                new sap.m.Column({ header: new sap.m.Label({ text: "Product" }) }),
-                new sap.m.Column({ header: new sap.m.Label({ text: "Product Description" }) })
-            ]
-        });
-
-        this._oTable.bindItems({
-            path: "/ZI_MATERIAL_VH",
-            template: new sap.m.ColumnListItem({
-                type: "Active", 
-                cells: [
-                    new sap.m.Text({ text: "{Product}" }),
-                    new sap.m.Text({ text: "{ProductDescription}" })
-                ]
-            })
-        });
-
-        // Row click selection logic
-        this._oTable.attachItemPress(function (oEvent) {
+          oTable.attachSelectionChange(function (oEvent) {
             var oItem = oEvent.getParameter("listItem");
             var oData = oItem.getBindingContext().getObject();
-            that.byId("inpMaterial3").setValue(oData.Product);
-            that._oMatVHD.close();
-        });
 
-        // 3. Dialog Setup
-        this._oMatVHD = new sap.ui.comp.valuehelpdialog.ValueHelpDialog({
-            title: "Select Material",
-            supportMultiselect: false,
-            filterBar: oFilterBar,
-            stretch: true,
-            ok: function () { that._oMatVHD.close(); },
-            cancel: function () { that._oMatVHD.close(); }
-        });
+            that._oSelectedBomUsage = {
+              Usage: oData.Usage,
+              UsageText: oData.UsageText,
+            };
+            that.byId("inpBomUsage3").setValue(oData.UsageText || oData.Usage);
 
-        this._oTable.setModel(this.getOwnerComponent().getModel());
-        this._oMatVHD.setTable(this._oTable);
-    }
+            that._oVHD.close();
+          });
 
-    this._oMatVHD.open();
-},
+          this._oVHD.setTable(oTable);
+          this._oVHD.setModel(oModel);
+        }
 
-onMaterialValueHelp: function () {
-    var that = this;
+        this._oVHD.open();
+      },
 
-    if (!this._oMatVHD) {
-        // --- 1. Filter Search Logic Function (Re-usable) ---
-        var fnDoSearch = function () {
+      onMaterialValueHelp: function () {
+        var that = this;
+        var oFilterBar;
+
+        if (!this._oMatVHD) {
+          var fnDoSearch = function () {
             var aFilters = [];
             var aItems = oFilterBar.getFilterGroupItems();
-            aItems.forEach(function (oItem) {
-                var sValue = oItem.getControl().getValue();
-                if (sValue) {
-                    aFilters.push(new sap.ui.model.Filter(
-                        oItem.getName(),
-                        sap.ui.model.FilterOperator.Contains,
-                        sValue
-                    ));
-                }
-            });
-            that._oTable.getBinding("items").filter(aFilters);
-        };
 
-        // --- 2. Clean Filter Bar ---
-        var oFilterBar = new sap.ui.comp.filterbar.FilterBar({
+            aItems.forEach(function (oItem) {
+              var sValue = oItem.getControl().getValue();
+              if (sValue) {
+                aFilters.push(
+                  new Filter(oItem.getName(), FilterOperator.Contains, sValue),
+                );
+              }
+            });
+
+            that._oTable.getBinding("items").filter(aFilters);
+          };
+
+          oFilterBar = new FilterBar({
             showFilterConfiguration: false,
-            showGoOnFB: false, // ❌ Go button ki zaroorat nahi kyunki Enter kaam karega
+            showGoOnFB: false,
             filterBarExpanded: true,
             useToolbar: false,
             filterGroupItems: [
-                new sap.ui.comp.filterbar.FilterGroupItem({
-                    groupName: "basic",
-                    name: "Product",
-                    label: "Product",
-                    visibleInFilterBar: true,
-                    control: new sap.m.Input({
-                        submit: fnDoSearch // ✅ Enter dabane par filter chalega
-                    })
+              new FilterGroupItem({
+                groupName: "basic",
+                name: "Product",
+                label: "Product",
+                visibleInFilterBar: true,
+                control: new Input({
+                  submit: fnDoSearch,
                 }),
-                new sap.ui.comp.filterbar.FilterGroupItem({
-                    groupName: "basic",
-                    name: "ProductDescription",
-                    label: "Product Description",
-                    visibleInFilterBar: true,
-                    control: new sap.m.Input({
-                        submit: fnDoSearch // ✅ Enter dabane par filter chalega
-                    })
-                })
-            ]
-        });
+              }),
+              new FilterGroupItem({
+                groupName: "basic",
+                name: "ProductDescription",
+                label: "Product Description",
+                visibleInFilterBar: true,
+                control: new Input({
+                  submit: fnDoSearch,
+                }),
+              }),
+            ],
+          });
 
-        // --- 3. Table Setup ---
-        this._oTable = new sap.m.Table({
+          this._oTable = new sap.m.Table({
             growing: true,
             growingThreshold: 1000,
-            mode: "None", 
+            mode: "None",
             columns: [
-                new sap.m.Column({ header: new sap.m.Label({ text: "Product" }) }),
-                new sap.m.Column({ header: new sap.m.Label({ text: "Product Description" }) })
-            ]
-        });
+              new sap.m.Column({
+                header: new sap.m.Label({ text: "Product" }),
+              }),
+              new sap.m.Column({
+                header: new sap.m.Label({ text: "Product Description" }),
+              }),
+            ],
+          });
 
-        this._oTable.bindItems({
+          this._oTable.bindItems({
             path: "/ZI_MATERIAL_VH",
             template: new sap.m.ColumnListItem({
-                type: "Active", 
-                cells: [
-                    new sap.m.Text({ text: "{Product}" }),
-                    new sap.m.Text({ text: "{ProductDescription}" })
-                ]
-            })
-        });
+              type: "Active",
+              cells: [
+                new sap.m.Text({ text: "{Product}" }),
+                new sap.m.Text({ text: "{ProductDescription}" }),
+              ],
+            }),
+          });
 
-        this._oTable.attachItemPress(function (oEvent) {
-            var oData = oEvent.getParameter("listItem").getBindingContext().getObject();
-            that.byId("inpMaterial3").setValue(oData.Product);
+          this._oTable.attachItemPress(function (oEvent) {
+            var oData = oEvent
+              .getParameter("listItem")
+              .getBindingContext()
+              .getObject();
+
+            that._oSelectedMaterial = {
+              Product: oData.Product,
+              ProductDescription: oData.ProductDescription,
+            };
+            that
+              .byId("inpMaterial3")
+              .setValue(oData.ProductDescription || oData.Product);
             that._oMatVHD.close();
-        });
+          });
 
-        // --- 4. Dialog Setup (Chota Size) ---
-        this._oMatVHD = new sap.ui.comp.valuehelpdialog.ValueHelpDialog({
+          this._oMatVHD = new ValueHelpDialog({
             title: "Select Material",
             supportMultiselect: false,
             filterBar: oFilterBar,
-            stretch: false,            // ❌ Full screen band kiya
-            contentWidth: "60%",       // ✅ Width kam ki
-            contentHeight: "60%",      // ✅ Height kam ki
-            ok: function () { that._oMatVHD.close(); },
-            cancel: function () { that._oMatVHD.close(); }
-        });
+            stretch: false,
+            contentWidth: "60%",
+            contentHeight: "60%",
+            ok: function () {
+              that._oMatVHD.close();
+            },
+            cancel: function () {
+              that._oMatVHD.close();
+            },
+          });
 
-        this._oTable.setModel(this.getOwnerComponent().getModel());
-        this._oMatVHD.setTable(this._oTable);
-    }
+          this._oTable.setModel(this.getOwnerComponent().getModel());
+          this._oMatVHD.setTable(this._oTable);
+        }
 
-    this._oMatVHD.open();
-},
+        this._oMatVHD.open();
+      },
 
-onPlantValueHelp: function () {
-    var that = this;
+      onPlantValueHelp: function () {
+        var that = this;
+        var oFilterBar;
 
-    if (!this._oPlantVHD) {
-        // --- 1. Filter Search Logic Function (Enter Key & Search Support) ---
-        var fnDoSearch = function () {
+        if (!this._oPlantVHD) {
+          var fnDoSearch = function () {
             var aFilters = [];
             var aItems = oFilterBar.getFilterGroupItems();
-            aItems.forEach(function (oItem) {
-                var sValue = oItem.getControl().getValue();
-                if (sValue) {
-                    aFilters.push(new sap.ui.model.Filter(
-                        oItem.getName(),
-                        sap.ui.model.FilterOperator.Contains,
-                        sValue
-                    ));
-                }
-            });
-            that._oPlantTable.getBinding("items").filter(aFilters);
-        };
 
-        // --- 2. Clean Filter Bar (With Enter Key Support) ---
-        var oFilterBar = new sap.ui.comp.filterbar.FilterBar({
+            aItems.forEach(function (oItem) {
+              var sValue = oItem.getControl().getValue();
+              if (sValue) {
+                aFilters.push(
+                  new Filter(oItem.getName(), FilterOperator.Contains, sValue),
+                );
+              }
+            });
+
+            that._oPlantTable.getBinding("items").filter(aFilters);
+          };
+
+          oFilterBar = new FilterBar({
             showFilterConfiguration: false,
-            showGoOnFB: false, 
+            showGoOnFB: false,
             filterBarExpanded: true,
             useToolbar: false,
             filterGroupItems: [
-                new sap.ui.comp.filterbar.FilterGroupItem({
-                    groupName: "basic",
-                    name: "Plant", // Key Element from your VH
-                    label: "Plant",
-                    visibleInFilterBar: true,
-                    control: new sap.m.Input({
-                        submit: fnDoSearch // ✅ Enter dabane par filter chalega
-                    })
+              new FilterGroupItem({
+                groupName: "basic",
+                name: "Plant",
+                label: "Plant",
+                visibleInFilterBar: true,
+                control: new Input({
+                  submit: fnDoSearch,
                 }),
-                new sap.ui.comp.filterbar.FilterGroupItem({
-                    groupName: "basic",
-                    name: "PlantName", // Assuming this is the field name for Description
-                    label: "Plant Name",
-                    visibleInFilterBar: true,
-                    control: new sap.m.Input({
-                        submit: fnDoSearch // ✅ Enter dabane par filter chalega
-                    })
-                })
-            ]
-        });
+              }),
+              new FilterGroupItem({
+                groupName: "basic",
+                name: "PlantName",
+                label: "Plant Name",
+                visibleInFilterBar: true,
+                control: new Input({
+                  submit: fnDoSearch,
+                }),
+              }),
+            ],
+          });
 
-        // --- 3. Table Setup (No Radio Buttons, Row Click Active) ---
-        this._oPlantTable = new sap.m.Table({
+          this._oPlantTable = new sap.m.Table({
             growing: true,
             growingThreshold: 20,
-            mode: "None", 
+            mode: "None",
             columns: [
-                new sap.m.Column({ header: new sap.m.Label({ text: "Plant" }) }),
-                new sap.m.Column({ header: new sap.m.Label({ text: "Plant Name" }) })
-            ]
-        });
+              new sap.m.Column({ header: new sap.m.Label({ text: "Plant" }) }),
+              new sap.m.Column({
+                header: new sap.m.Label({ text: "Plant Name" }),
+              }),
+            ],
+          });
 
-        this._oPlantTable.bindItems({
-            path: "/ZI_plant_vh", // Aapki defined Entity
+          this._oPlantTable.bindItems({
+            path: "/ZI_plant_vh",
             template: new sap.m.ColumnListItem({
-                type: "Active", 
-                cells: [
-                    new sap.m.Text({ text: "{Plant}" }),
-                    new sap.m.Text({ text: "{PlantName}" }) 
-                ]
-            })
-        });
+              type: "Active",
+              cells: [
+                new sap.m.Text({ text: "{Plant}" }),
+                new sap.m.Text({ text: "{PlantName}" }),
+              ],
+            }),
+          });
 
-        // Row click selection logic
-        this._oPlantTable.attachItemPress(function (oEvent) {
-            var oData = oEvent.getParameter("listItem").getBindingContext().getObject();
-            that.byId("inpPlant3").setValue(oData.Plant); // ✅ Mapping to Plant field
+          this._oPlantTable.attachItemPress(function (oEvent) {
+            var oData = oEvent
+              .getParameter("listItem")
+              .getBindingContext()
+              .getObject();
+
+            that._oSelectedPlant = {
+              Plant: oData.Plant,
+              PlantName: oData.PlantName,
+            };
+            that.byId("inpPlant3").setValue(oData.PlantName || oData.Plant);
             that._oPlantVHD.close();
-        });
+          });
 
-        // --- 4. Dialog Setup (Chota Size - 60% Width/Height) ---
-        this._oPlantVHD = new sap.ui.comp.valuehelpdialog.ValueHelpDialog({
+          this._oPlantVHD = new ValueHelpDialog({
             title: "Select Plant",
             supportMultiselect: false,
             filterBar: oFilterBar,
             stretch: false,
             contentWidth: "60%",
             contentHeight: "60%",
-            ok: function () { that._oPlantVHD.close(); },
-            cancel: function () { that._oPlantVHD.close(); }
-        });
+            ok: function () {
+              that._oPlantVHD.close();
+            },
+            cancel: function () {
+              that._oPlantVHD.close();
+            },
+          });
 
-        this._oPlantTable.setModel(this.getOwnerComponent().getModel());
-        this._oPlantVHD.setTable(this._oPlantTable);
-    }
+          this._oPlantTable.setModel(this.getOwnerComponent().getModel());
+          this._oPlantVHD.setTable(this._oPlantTable);
+        }
 
-    this._oPlantVHD.open();
-}
+        this._oPlantVHD.open();
+      },
     });
-});
+  },
+);

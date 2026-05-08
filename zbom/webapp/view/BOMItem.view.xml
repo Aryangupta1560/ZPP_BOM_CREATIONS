@@ -7,6 +7,14 @@
     displayBlock="true">
 
     <Page id="pageBOMItems" title="Create Material BOM" showNavButton="true" navButtonPress=".onNavBack">
+        <customHeader>
+            <Bar>
+                <contentLeft>
+                    <Image src="img/expound-logo.png" height="1.75rem" densityAware="false" class="sapUiTinyMarginBegin sapUiTinyMarginEnd"/>
+                    <Title text="Create Material BOM" level="H2"/>
+                </contentLeft>
+            </Bar>
+        </customHeader>
         <content>
             <!-- Header Section with Responsive Padding -->
             <VBox class="sapUiResponsiveContentPadding">
@@ -19,10 +27,13 @@
                     columnsXL="2" columnsL="2" columnsM="1">
                     <f:content>
                         <Label text="Material"/>
-                        <Text text="{headerModel>/Material}"/>
+                        <Text text="{= ${headerModel>/MaterialDescription} || ${headerModel>/Material} }"/>
 
                         <Label text="Plant"/>
-                        <Text text="{headerModel>/Plant}"/>
+                        <Text text="{= ${headerModel>/PlantDescription} || ${headerModel>/Plant} }"/>
+
+                        <Label text="BOM Usage"/>
+                        <Text text="{= ${headerModel>/BomUsageText} || ${headerModel>/Usage} }"/>
 
                         <Label text="Alternative BOM"/>
                         <Text text="{headerModel>/AltBom}"/>
